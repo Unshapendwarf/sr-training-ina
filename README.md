@@ -8,6 +8,7 @@
 Installing environments...
 ```sh
 conda install --yes --file requirements.txt
+pip install pillow-avif-plugin
 ```
 
 
