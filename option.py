@@ -15,6 +15,7 @@ parser.add_argument("--n_groups", type=int, default=3)
 parser.add_argument("--out_dim", type=int, default=32)
 parser.add_argument("--pretrained", action="store_true")
 parser.add_argument("--pretrained_path", type=str)
+parser.add_argument("--dev_path", type=str)
 
 
 
@@ -24,7 +25,7 @@ parser.add_argument("--num_epoch", type=int, default=100)
 parser.add_argument("--num_update_per_epoch", type=int, default=1000)
 parser.add_argument("--weight_decay", type=float, default=0)
 parser.add_argument("--loss_type", type=str, default="l1", choices=("l2", "l1"))
-parser.add_argument("--lr", type=float, default=1e-4)
+parser.add_argument("--lr", type=float, default=1e-5)
 parser.add_argument("--lr_decay_epoch", type=int, default=100)
 parser.add_argument("--lr_decay_rate", type=float, default=1)
 parser.add_argument("--num_valid_image", type=int, default=10, help="number of images used for validation")

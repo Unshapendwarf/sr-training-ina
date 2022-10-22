@@ -231,6 +231,13 @@ def get_psnr(pred, gt, max_value=1.0):
     else:
         return 20*math.log10(max_value/math.sqrt(mse))
 
+def gpu_psnr(pred, gt, max_value=255.0):
+    mse = torch.mean((pred - gt) ** 2)
+    if mse == 0:
+        return 100
+    else:
+        return 20*math.log10(max_value/torch.sqrt(mse))
+
 def print_progress(iteration, total, prefix = '', suffix = '', decimals = 1, barLength = 100):
     formatStr = "{0:." + str(decimals) + "f}"
     percent = formatStr.format(100 * (iteration / float(total)))

@@ -16,7 +16,7 @@ from option import opt
 img_splitter = util.ImageSplitter(opt.patch_size, opt.scale, opt.patch_size)
 
 class Trainer():
-    def __init__(self, model, dataset, MLP=None):
+    def __init__(self, model, dataset, pretrained_path, MLP=None):
         self.model = model
         self.dataset = dataset
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -26,8 +26,8 @@ class Trainer():
         self.MLP = MLP
         
         if opt.pretrained:
-          print("Model loading...")
-          self.model.load_state_dict(torch.load(opt.pretrained_path))
+          # print("Model loading...")
+          self.model.load_state_dict(torch.load(pretrained_path))
         
         self.optimizer = optim.Adam(model.parameters(), lr=opt.lr, weight_decay=opt.weight_decay)
         self.loss_func = self._get_loss_func(opt.loss_type)

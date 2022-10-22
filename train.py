@@ -27,22 +27,25 @@ trainer = Trainer(model, train_dataset)
 
 epoch = 0
 while epoch < opt.num_epoch:
-    trainer.train_one_epoch()
-    total_sr_psnr = []
-    total_sr_ssim = []
-    total_latency = []
-    for idx in range(opt.num_valid_image):
-        if opt.is_split:
-          sr_psnr, sr_ssim, latency = trainer.validate_frame_split()
-        else:
-           sr_psnr, sr_ssim, latency = trainer.validate_frame()         
-        total_sr_psnr.append(sr_psnr)
-        total_sr_ssim.append(sr_ssim)
-        total_latency.append(latency)
-    total_psnr = np.mean(total_sr_psnr)
-    total_ssim = np.mean(total_sr_ssim)
-    print("[Epoch {}] PSNR: {} SSIM: {}".format(epoch, total_psnr, total_ssim))
-    epoch +=1
-trainer.save_model(opt.model_type)
+  trainer.train_one_epoch()
+  total_sr_psnr = []
+  total_sr_ssim = []
+  total_latency = []
+  for idx in range(opt.num_valid_image):
+      if opt.is_split:
+        sr_psnr, latency = trainer.validate_frame_split()
+      else:
+          sr_psnr, latency = trainer.validate_frame()         
+      total_sr_psnr.append(sr_psnr)
+      # total_sr_ssim.append(sr_ssim)
+      total_latency.append(latency)
+  total_psnr = np.mean(total_sr_psnr)
+  # total_ssim = np.mean(total_sr_ssim)
+  print("[Epoch {}] PSNR: {}".format(epoch, total_psnr))
+  # print("[Epoch {}] PSNR: {} SSIM: {}".format(epoch, total_psnr, total_ssim))
+  if epoch%5==0:
+    trainer.save_model(opt.model_type+"_"+str(epoch))
+  epoch +=1
+trainer.save_model(opt.model_type+"_last")
 
 

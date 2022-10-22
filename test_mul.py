@@ -3,7 +3,7 @@ import torch
 
 from dataset import *
 from option import opt
-from trainer import Trainer
+from trainer_mul import Trainer
 
 
 import model.ABPN as ABPN
@@ -26,10 +26,16 @@ if not opt.pretrained:
   print("please load the model file")
   exit(1)
 
-dataset = TestDataset()
-trainer = Trainer(model, dataset)
-psnr = trainer.test()
-avg_psnr = sum(psnr)/len(psnr)
-# avg_ssim = sum(ssim)/len(ssim)
+pretrained_paths = [ os.path.join(opt.dev_path, f"EDSR_{u_epoch}.pth") for u_epoch in [0, 10, 20, 50, 100]]
 
-print("[Result] PSNR: {} CNT {}".format(avg_psnr, len(psnr)))
+# pretrained_paths = [ os.path.join(opt.dev_path, f"EDSR_{u_epoch}.pth") for u_epoch in [0, 10, 20, 50, 100, 150, 195, 295]]
+dataset = TestDataset()
+for k, pr_path in enumerate(pretrained_paths):
+  trainer = Trainer(model, dataset, pr_path)
+  psnr = trainer.test()
+  avg_psnr = sum(psnr)/len(psnr)
+  # avg_ssim = sum(ssim)/len(ssim)
+  if k==len(pretrained_paths)-1:
+    print("[RESULT] PSNR: {} CNT {}".format(avg_psnr, len(psnr)))
+    break
+  print("[RESULT] PSNR: {} CNT {}".format(avg_psnr, len(psnr)), end=" / ")

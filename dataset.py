@@ -3,7 +3,7 @@ from PIL import Image
 import torch.utils.data as data
 from torchvision.transforms import Compose, ToTensor
 import numpy as np
-import pillow_avif
+# import pillow_avif
 from tqdm import tqdm
 import pandas as pd
 import random
@@ -111,8 +111,8 @@ class TestDataset(data.Dataset):
         self.lr_images = []
         self.hr_images = []
                
-        print("Preparing HR/LR dataset for training ... ")
-        for lr, hr in tqdm(zip(self.lr_filenames, self.hr_filenames), total=len(self.lr_filenames)):
+        # print("Preparing HR/LR dataset for training ... ")
+        for lr, hr in zip(self.lr_filenames, self.hr_filenames):
             lr_img = Image.open(lr)
             hr_img = Image.open(hr)
             lr_img.load()
