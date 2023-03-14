@@ -21,16 +21,19 @@ n_b=2
 n_f=32
 n_cls=20
 
-for var in 9
+BASEDIR=$(dirname $0)
+
+for var in {0..20..1}
 do 
-CUDA_VISIBLE_DEVICES=2 python train.py --data_root /home/hong/dataset/oneh_data/${n_cls}cls/${var} \
+echo ${var}
+CUDA_VISIBLE_DEVICES=2 python train.py --data_root ${BASEDIR}/data/${n_cls}cls/${var} \
       --input_name LR \
       --target_name HR \
       --model_type EDSR \
-      --model_save_root /home/hong/1017_dir/sr-training/cls_models/oneh_${n_cls}cls300/${var} \
+      --model_save_root ${BASEDIR}/logs \
       --scale 4 --n_blocks $n_b --n_feats $n_f \
-      --use_cuda --num_epoch 300 --num_valid_image 3\
+      --use_cuda --num_epoch 3 --num_valid_image 3\
       --num_batch 1 \
-      --num_update_per_epoch 300  \
+      --num_update_per_epoch 10  \
       --pretrained --pretrained_path pretrained_model/2_32.pth
 done
