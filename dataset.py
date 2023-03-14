@@ -10,24 +10,25 @@ import random
 import csv
 
 import utility as util
-from option import opt
+# from option import opt
 
   
 
-
 class TrainDataset(data.Dataset):
-    def __init__(self):
+    def __init__(self, opt):
         super(TrainDataset, self).__init__()
-        assert os.path.exists(opt.input_path)
-        assert os.path.exists(opt.target_path)
+        self.opt = opt
+        assert os.path.exists(self.opt.input_path)
+        assert os.path.exists(self.opt.target_path)
+        self.img_format = self.opt.img_format
         self.input_transform = Compose([ToTensor(),])
         self._setup()
 
 
     def _setup(self): 
 
-        self.lr_filenames = glob.glob(f'{opt.input_path}/*.' + opt.img_format)
-        self.hr_filenames = glob.glob(f'{opt.target_path}/*.' + opt.img_format)
+        self.lr_filenames = glob.glob(f'{self.opt.input_path}/*.' + self.opt.img_format)
+        self.hr_filenames = glob.glob(f'{self.opt.target_path}/*.' + self.opt.img_format)
    
         assert(len(self.lr_filenames) == len(self.hr_filenames))  
         
@@ -50,7 +51,7 @@ class TrainDataset(data.Dataset):
             lr_w, lr_h = lr_img.size
             hr_w, hr_h = hr_img.size
 
-            assert(lr_w * opt.scale == hr_w and lr_h * opt.scale == hr_h)
+            assert(lr_w * self.opt.scale == hr_w and lr_h * self.opt.scale == hr_h)
             self.lr_images.append(lr_img)
             self.hr_images.append(hr_img)
             
@@ -63,10 +64,10 @@ class TrainDataset(data.Dataset):
         #Randomly select crop location
        
         width, height = input.size
-        height_ = random.randrange(0, height - opt.patch_size + 1)
-        width_ = random.randrange(0, width - opt.patch_size + 1)
-        input = input.crop((width_ , height_, width_ + opt.patch_size, height_ + opt.patch_size))
-        target = target.crop((width_ * opt.scale, height_ * opt.scale, (width_ + opt.patch_size) * opt.scale, (height_ + opt.patch_size) * opt.scale))
+        height_ = random.randrange(0, height - self.opt.patch_size + 1)
+        width_ = random.randrange(0, width - self.opt.patch_size + 1)
+        input = input.crop((width_ , height_, width_ + self.opt.patch_size, height_ + self.opt.patch_size))
+        target = target.crop((width_ * self.opt.scale, height_ * self.opt.scale, (width_ + self.opt.patch_size) * self.opt.scale, (height_ + self.opt.patch_size) * self.opt.scale))
       
         input = self.input_transform(input)
         target = self.input_transform(target)
@@ -88,20 +89,21 @@ class TrainDataset(data.Dataset):
         return self.getItemTrain(idx % self.f_len)                
 
     def __len__(self):
-          return opt.num_batch * opt.num_update_per_epoch
+          return self.opt.num_batch * self.opt.num_update_per_epoch
 
 class TestDataset(data.Dataset):
-    def __init__(self):
+    def __init__(self, opt):
         super(TestDataset, self).__init__()
-        assert os.path.exists(opt.input_path)
-        assert os.path.exists(opt.target_path)
+        self.opt = opt
+        assert os.path.exists(self.opt.input_path)
+        assert os.path.exists(self.opt.target_path)
         self.input_transform = Compose([ToTensor(),])
         self._setup()
         
     def _setup(self):
     
-        self.lr_filenames = glob.glob(f'{opt.input_path}/*.' + opt.img_format)
-        self.hr_filenames = glob.glob(f'{opt.target_path}/*.' + opt.img_format)
+        self.lr_filenames = glob.glob(f'{self.opt.input_path}/*.' + self.opt.img_format)
+        self.hr_filenames = glob.glob(f'{self.opt.target_path}/*.' + self.opt.img_format)
    
         assert(len(self.lr_filenames) == len(self.hr_filenames))
 
@@ -120,7 +122,7 @@ class TestDataset(data.Dataset):
             lr_w, lr_h = lr_img.size
             hr_w, hr_h = hr_img.size
 
-            assert(lr_w * opt.scale == hr_w and lr_h * opt.scale == hr_h)
+            assert(lr_w * self.opt.scale == hr_w and lr_h * self.opt.scale == hr_h)
             self.lr_images.append(lr_img)
             self.hr_images.append(hr_img)
 

@@ -1,36 +1,48 @@
 # SR-Traning
 ## Description
-- Training and testing SR Model
-- Model list: EDSR/[RCAN](https://github.com/yulunzhang/RCAN)/[SAN](https://github.com/daitao/SAN)/[ABPN](https://github.com/Holmes-Alan/ABPN)
+- Training and testing clustering for superesolution
+- Upscaling Bicubic / Naive SR / Clustered SR
+
+<!-- Model list: EDSR/[RCAN](https://github.com/yulunzhang/RCAN)/[SAN](https://github.com/daitao/SAN)/[ABPN](https://github.com/Holmes-Alan/ABPN) -->
 
 ## Installation
 
 Installing environments...
 ```sh
-conda install --yes --file requirements.txt
-pip install pillow-avif-plugin
+pip install -r requirements.txt
 ```
-
 
 ## Executing
-Train
+Train Cluster
 ```sh
-./train.sh
+./scripts/train_cluster.sh
 ```
-Test
+
+Train Naive
 ```sh
-./test.sh
+./scripts/train_naive.sh
 ```
+
+Test Cluster
+```sh
+./scripts/test_cluster.sh
+```
+
+Test Naive
+```sh
+./scripts/test_naive.sh
+```
+
+
 ## Evaluation
 Dataset: DIV2K x4 scale 
 Epoch: 100
 Number of iteration per epoch : 4000
-|Model|PSNR(dB)|SSIM|Model size(MB)|
-|------|---|---|---|
-|EDSR|35.02|0.9391|2.93|
-|RCAN|35.56|0.9406|7.98|
-|SAN|35.71|0.9428|7.96|
-|ABPN|34.25|0.9351|5.05|
+|Method|PSNR(dB)|SSIM|
+|------|---|---|
+|Bicubic|35.02|0.9391|
+|Naive SR|35.56|0.9406|
+|Clustered SR|35.71|0.9428|
 
 
 

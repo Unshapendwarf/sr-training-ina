@@ -16,7 +16,8 @@ from option import opt
 img_splitter = util.ImageSplitter(opt.patch_size, opt.scale, opt.patch_size)
 
 class Trainer():
-    def __init__(self, model, dataset, MLP=None):
+    def __init__(self, model, dataset, opt, MLP=None):
+        self.opt = opt
         self.model = model
         self.dataset = dataset
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -25,12 +26,12 @@ class Trainer():
         self.model = self.model.to(self.device)
         self.MLP = MLP
         
-        if opt.pretrained:
-          print("Model loading...")
-          self.model.load_state_dict(torch.load(opt.pretrained_path))
+        if self.opt.pretrained:
+          # print("Model loading...")
+          self.model.load_state_dict(torch.load(self.opt.pretrained_path))
         
-        self.optimizer = optim.Adam(model.parameters(), lr=opt.lr, weight_decay=opt.weight_decay)
-        self.loss_func = self._get_loss_func(opt.loss_type)
+        self.optimizer = optim.Adam(model.parameters(), lr=self.opt.lr, weight_decay=self.opt.weight_decay)
+        self.loss_func = self._get_loss_func(self.opt.loss_type)
         
     def _get_loss_func(self, loss_type):
         if loss_type == 'l2':
@@ -41,10 +42,10 @@ class Trainer():
             raise NotImplementedError
 
     def _adjust_learning_rate(self, epoch):
-        if opt.lr_decay_epoch is not None:
-            lr = opt.lr * (opt.lr_decay_rate ** (epoch // opt.lr_decay_epoch))
+        if self.opt.lr_decay_epoch is not None:
+            lr = self.opt.lr * (self.opt.lr_decay_rate ** (epoch // self.opt.lr_decay_epoch))
         else:
-            lr = opt.lr
+            lr = self.opt.lr
 
         for param_group in self.optimizer.param_groups:
             param_group['lr'] = lr
@@ -53,11 +54,11 @@ class Trainer():
         self.timer.tic()
         self.model.train()
         
-        train_dataloader = DataLoader(dataset=self.dataset, num_workers=opt.num_thread, batch_size=opt.num_batch, pin_memory=True, shuffle=True)
+        train_dataloader = DataLoader(dataset=self.dataset, num_workers=self.opt.num_thread, batch_size=self.opt.num_batch, pin_memory=True, shuffle=True)
         loss_total = []    
         for iteration, batch in enumerate(train_dataloader, 1):
             input, target = batch[0], batch[1]
-            if opt.rgb_255:
+            if self.opt.rgb_255:
               input = input*255.0
               target = target*255.0              
             input, target =  input.to(self.device), target.to(self.device)
@@ -67,7 +68,7 @@ class Trainer():
             loss.backward()
             self.optimizer.step()           
             if iteration % 10 == 0:
-                util.print_progress(iteration, len(self.dataset)/opt.num_batch, 'Train Progress (X{}):'.format(opt.scale), 'Complete', 1, 50)        
+                util.print_progress(iteration, len(self.dataset)/self.opt.num_batch, 'Train Progress (X{}):'.format(self.opt.scale), 'Complete', 1, 50)        
         print("[Epoch %d] loss %f" % (self.epoch, sum(loss_total)/len(loss_total)))
         
         self.epoch += 1
@@ -89,7 +90,7 @@ class Trainer():
             target = target_tensor.to(self.device)
 
 
-            if opt.rgb_255:
+            if self.opt.rgb_255:
               input_tensor = input_tensor*255.0
 
             t1 = time.time()
@@ -97,7 +98,7 @@ class Trainer():
             torch.cuda.synchronize()
             t2 = time.time()
 
-            if opt.rgb_255:
+            if self.opt.rgb_255:
               output = torch.squeeze(torch.clamp(output, min=0, max=255.0), 0).permute(1, 2, 0)
 
             else:
@@ -125,7 +126,7 @@ class Trainer():
             target_tensor *= 255
             target = target_tensor.to(self.device)
             
-            if opt.rgb_val == 255:
+            if self.opt.rgb_val == 255:
               input_tensor = input_tensor*255.0            
             t1 = time.time()
             tmp = img_splitter.split_img_tensor(input_tensor)
@@ -141,7 +142,7 @@ class Trainer():
             output = img_splitter.merge_img_tensor(res)
             t2 = time.time()
 
-            if opt.rgb_255:
+            if self.opt.rgb_255:
               output = torch.squeeze(torch.clamp(output, min=0, max=255.0), 0).permute(1, 2, 0)
             else:
               output = torch.squeeze(torch.clamp(output, min=0, max=1.), 0).permute(1, 2, 0)
@@ -161,7 +162,7 @@ class Trainer():
           os.makedirs(result_dir)
         
         self.model.eval()
-        data_loader = DataLoader(dataset=self.dataset, num_workers=opt.num_thread, batch_size=1, pin_memory=True, shuffle=False)
+        data_loader = DataLoader(dataset=self.dataset, num_workers=self.opt.num_thread, batch_size=1, pin_memory=True, shuffle=False)
         total_psnr = []
         # total_ssim = []
         
@@ -169,10 +170,10 @@ class Trainer():
           for iteration, batch in enumerate(data_loader):
               input, target = batch[0], batch[1]
               input, target =  input.to(self.device), target.to(self.device)
-              if opt.rgb_255:
+              if self.opt.rgb_255:
                 input = input*255.0
               output = self.model(input)
-              if opt.rgb_255:
+              if self.opt.rgb_255:
                output = torch.squeeze(torch.clamp(output, min=0, max=255.), 0).permute(1, 2, 0)               
               else:             
                 output = torch.squeeze(torch.clamp(output, min=0, max=1.), 0).permute(1, 2, 0)
@@ -201,7 +202,7 @@ class Trainer():
           os.makedirs(result_dir)
         
         self.model.eval()
-        data_loader = DataLoader(dataset=self.dataset, num_workers=opt.num_thread, batch_size=1, pin_memory=True, shuffle=False)
+        data_loader = DataLoader(dataset=self.dataset, num_workers=self.opt.num_thread, batch_size=1, pin_memory=True, shuffle=False)
         total_psnr = []
         total_ssim = []
         
@@ -209,10 +210,10 @@ class Trainer():
           for iteration, batch in enumerate(data_loader):
               input, target = batch[0], batch[1]
               input, target =  input.to(self.device), target.to(self.device)
-              if opt.rgb_255:
+              if self.opt.rgb_255:
                 input = input*255.0
               output = self.model(input)
-              if opt.rgb_255:
+              if self.opt.rgb_255:
                output = torch.squeeze(torch.clamp(output, min=0, max=255.), 0).permute(1, 2, 0)               
               else:             
                 output = torch.squeeze(torch.clamp(output, min=0, max=1.), 0).permute(1, 2, 0)
@@ -229,6 +230,8 @@ class Trainer():
         return np.array(total_psnr), np.array(total_ssim)
 
     def save_model(self, name):
-        save_path = os.path.join(opt.model_save_root, '{}.pth'.format(name))
+        if not os.path.isdir(self.opt.model_save_root):
+              os.makedirs(self.opt.model_save_root)
+        save_path = os.path.join(self.opt.model_save_root, '{}.pth'.format(name))
         print(f"saving model to {save_path} ...")
         torch.save(self.model.state_dict(), save_path)
