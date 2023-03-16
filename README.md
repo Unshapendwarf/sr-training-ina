@@ -24,13 +24,11 @@ git clone https://github.com/Unshapendwarf/sr-training-ina.git
 cd sr-training-ina
 ```
 
-## Download Dataset
+## Dataset
 You can download dataset [here](https://drive.google.com/file/d/1ussHhGVh0BEe_RjyGgD3lS3rJNwtOc4R/view?usp=sharing) or follow below scripts
 ```sh
-wget --
-unzip data.zip
+python3 script/download_data.py
 ```
- 
 
 ## Execution
 Train Cluster
@@ -55,7 +53,7 @@ bash scripts/test_naive.sh
 
 
 ## Evaluation
-Dataset: DIV2K x4 scale 
+Dataset: Custom youtube frames x4 scale 
 Epoch: 300
 Number of iteration per epoch : 300
 |Method|PSNR(dB)|SSIM|
