@@ -15,7 +15,7 @@ conda activate cluster_sr
 
 Install required python dependences
 ```sh
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 Clone the repository
