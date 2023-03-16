@@ -7,38 +7,57 @@
 
 ## Installation
 
-Installing environments...
+We recommend you to create conda env
+```sh
+conda create -n cluster_sr python=3.8
+conda activate cluster_sr
+```
+
+Install required python dependences
 ```sh
 pip3 install -r requirements.txt
 ```
 
+Clone the repository
+```sh
+git clone https://github.com/Unshapendwarf/sr-training-ina.git
+cd sr-training-ina
+```
 
-## Executing
+## Download Dataset
+You can download dataset [here](https://drive.google.com/file/d/1ussHhGVh0BEe_RjyGgD3lS3rJNwtOc4R/view?usp=sharing) or follow below scripts
+```sh
+wget --
+unzip data.zip
+```
+ 
+
+## Execution
 Train Cluster
 ```sh
-./scripts/train_cluster.sh
+bash scripts/train_cluster.sh
 ```
 
 Train Naive
 ```sh
-./scripts/train_naive.sh
+bash scripts/train_naive.sh
 ```
 
 Test Cluster
 ```sh
-./scripts/test_cluster.sh
+bash scripts/test_cluster.sh
 ```
 
 Test Naive
 ```sh
-./scripts/test_naive.sh
+bash scripts/test_naive.sh
 ```
 
 
 ## Evaluation
 Dataset: DIV2K x4 scale 
-Epoch: 100
-Number of iteration per epoch : 4000
+Epoch: 300
+Number of iteration per epoch : 300
 |Method|PSNR(dB)|SSIM|
 |------|---|---|
 |Bicubic|35.02|0.9391|
