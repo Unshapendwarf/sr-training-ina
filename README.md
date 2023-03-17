@@ -7,10 +7,17 @@
 
 ## Installation
 
+
+Install anaconda
+```sh
+wget https://repo.anaconda.com/archive/Anaconda3-2022.05-Linux-x86_64.sh
+bash Anaconda3-2022.05-Linux-x86_64.sh
+source ~/.bashrc
+```
+
 We recommend you to create conda env
 ```sh
-conda create -n cluster_sr python=3.8
-conda activate cluster_sr
+conda create -n cluster_sr python=3.8 && conda activate cluster_sr
 ```
 
 Clone the repository

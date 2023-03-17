@@ -1,6 +1,8 @@
 data
+output
+result
 logs
 **/__pycache__/
 .vscode/
 *.zip
-
+*.xlsx

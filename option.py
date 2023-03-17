@@ -4,9 +4,9 @@ parser = argparse.ArgumentParser(description="Option for Super-resolution")
 
 # Directory
 parser.add_argument("--data_root", type=str, default="../data/frames")
-parser.add_argument("--model_save_root", type=str, default="save_model")
+parser.add_argument("--log_dir", type=str, default="logs")
 parser.add_argument("--result_root", type=str, default="result")
-parser.add_argument("--img_save_dir", type=str, default="output")
+parser.add_argument("--img_save_dir", type=str, default="result")
 
 # Model Configuration
 parser.add_argument("--model_type", type=str, required=True, choices=("EDSR", "RCAN", "ABPN", "SAN"))
@@ -18,6 +18,7 @@ parser.add_argument("--pretrained", action="store_true")
 parser.add_argument("--pretrained_path", type=str)
 parser.add_argument("--pretrained_dir", type=str)
 parser.add_argument("--dev_path", type=str)
+parser.add_argument("--img_save", action='store_true')
 
 # Training
 parser.add_argument("--num_batch", type=int, default=64)

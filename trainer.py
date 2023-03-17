@@ -17,7 +17,7 @@ from option import opt
 img_splitter = util.ImageSplitter(opt.patch_size, opt.scale, opt.patch_size)
 
 class Trainer():
-    def __init__(self, model, dataset, opt, MLP=None):
+    def __init__(self, model, dataset, opt, cluster_idx = 0, MLP=None):
         self.opt = opt
         self.model = model
         self.dataset = dataset
@@ -26,11 +26,17 @@ class Trainer():
         self.epoch = 0
         self.model = self.model.to(self.device)
         self.MLP = MLP
+        self.img_save = opt.img_save
         self.img_save_dir = self.opt.img_save_dir
-        
+        self.cluster_idx = cluster_idx
+
         if self.opt.pretrained:
           # print("Model loading...")
           self.model.load_state_dict(torch.load(self.opt.pretrained_path))
+
+        if self.opt.img_save:
+          if not os.path.isdir(self.opt.img_save_dir):
+              os.makedirs(self.opt.img_save_dir)
         
         self.optimizer = optim.Adam(model.parameters(), lr=self.opt.lr, weight_decay=self.opt.weight_decay)
         self.loss_func = self._get_loss_func(self.opt.loss_type)
@@ -159,7 +165,7 @@ class Trainer():
         return sr_psnr, sr_ssim, (t2-t1)*1000
         
     def test(self):
-        result_dir = os.path.join('result', 'img')
+        result_dir = self.opt.img_save_dir
         if not os.path.exists(result_dir):
           os.makedirs(result_dir)
         
@@ -180,9 +186,13 @@ class Trainer():
               else:             
                 output = torch.squeeze(torch.clamp(output, min=0, max=1.), 0).permute(1, 2, 0)
                 output *= 255
+              
               output_np = output.to('cpu').detach().numpy()
-              im = Image.fromarray(output_np)
-              im.save(os.path.join(self.img_save_dir, '{:04d}.png'.format(iteration)))
+              
+              # if self.img_save:
+              #   output_np = output_np.astype(np.uint8)
+              #   im = Image.fromarray(output_np)
+              #   im.save(os.path.join(self.img_save_dir, '{:04d}.png'.format(self.cluster_idx*5 + iteration)))
               
               
               target = torch.squeeze(torch.clamp(target, min=0, max=1.), 0).permute(1, 2, 0)
@@ -195,8 +205,9 @@ class Trainer():
               # sr_ssim = util.calculate_ssim(output_np, target_np)   
               total_psnr.append(sr_psnr)
               # total_ssim.append(sr_ssim)
-              idx = str(iteration).zfill(4)
-              # imageio.imwrite('{}/{}.png'.format(result_dir, idx), output_np.astype(np.uint8))
+              if self.img_save:
+                idx = str(self.cluster_idx * 5 + iteration).zfill(4)
+                imageio.imwrite('{}/{}.png'.format(result_dir, idx), output_np.astype(np.uint8))
 
         return np.array(total_psnr)
         # return np.array(total_psnr), np.array(total_ssim)
