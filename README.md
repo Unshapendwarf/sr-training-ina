@@ -56,11 +56,11 @@ bash scripts/test_naive.sh
 Dataset: Custom youtube frames x4 scale 
 Epoch: 300
 Number of iteration per epoch : 300
-|Method|PSNR(dB)|SSIM|
+|Method|PSNR(dB)|
 |------|---|---|
-|Bicubic|35.02|0.9391|
-|Naive SR|35.56|0.9406|
-|Clustered SR|35.71|0.9428|
+|Bicubic|29.059|
+|Naive SR|31.176|
+|Clustered SR|32.459|
 
 
 
