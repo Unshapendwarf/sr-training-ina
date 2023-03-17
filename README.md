@@ -28,7 +28,7 @@ pip3 install -r requirements.txt
 ## Dataset
 You can download dataset [here](https://drive.google.com/file/d/1ussHhGVh0BEe_RjyGgD3lS3rJNwtOc4R/view?usp=sharing) or follow below scripts
 ```sh
-python3 ./scripts/download_data.py
+python3 scripts/download_data.py
 ```
 
 ## Execution
@@ -54,14 +54,15 @@ bash scripts/test_naive.sh
 
 
 ## Evaluation
-Dataset: Custom youtube frames x4 scale 
-Epoch: 300
-Number of iteration per epoch : 300
-|Method|PSNR(dB)|SSIM|
-|------|---|---|
-|Bicubic|35.02|0.9391|
-|Naive SR|35.56|0.9406|
-|Clustered SR|35.71|0.9428|
+- Dataset: Custom youtube frames x4 scale 
+- Epoch: 100
+- Number of iteration per epoch : 300
+
+|Method|PSNR(dB)|
+|------|---|
+|Bicubic|29.059|
+|Naive SR|31.176|
+|Clustered SR|32.459|
 
 
 

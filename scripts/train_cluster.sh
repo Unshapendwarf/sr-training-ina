@@ -13,6 +13,6 @@ CUDA_VISIBLE_DEVICES=2 python train.py --data_root ${BASEDIR}/data/clustered/ \
       --scale 4 --n_blocks $n_b --n_feats $n_f \
       --use_cuda --num_epoch 20 --num_valid_image 3\
       --num_batch 1 \
-      --num_update_per_epoch 10  \
+      --num_update_per_epoch 300  \
       --pretrained --pretrained_path pretrained_model/2_32.pth\
       --cluster
