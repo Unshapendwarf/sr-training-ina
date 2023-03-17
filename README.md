@@ -8,7 +8,7 @@
 ## Installation
 
 
-Install anaconda
+Install anaconda. If you already have anaconda or don't wants to use conda env, you can skip this step
 ```sh
 wget https://repo.anaconda.com/archive/Anaconda3-2022.05-Linux-x86_64.sh
 bash Anaconda3-2022.05-Linux-x86_64.sh
