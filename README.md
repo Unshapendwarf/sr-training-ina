@@ -57,7 +57,7 @@ Dataset: Custom youtube frames x4 scale
 Epoch: 300
 Number of iteration per epoch : 300
 |Method|PSNR(dB)|
-|------|---|---|
+|------|---|
 |Bicubic|29.059|
 |Naive SR|31.176|
 |Clustered SR|32.459|
