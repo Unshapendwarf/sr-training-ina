@@ -39,7 +39,7 @@ if __name__ == '__main__':
   if opt.cluster:
     total_psnr = 0
     total_cnt = 0
-    for cluster_idx in tqdm(range(opt.cluster_num)):
+    for cluster_idx in range(opt.cluster_num):
       cluster_opt = copy.deepcopy(opt)
       cluster_opt.input_path = os.path.join(opt.data_root, f'{cluster_idx}/LR')
       cluster_opt.target_path = os.path.join(opt.data_root, f'{cluster_idx}/HR')

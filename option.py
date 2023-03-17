@@ -6,6 +6,7 @@ parser = argparse.ArgumentParser(description="Option for Super-resolution")
 parser.add_argument("--data_root", type=str, default="../data/frames")
 parser.add_argument("--model_save_root", type=str, default="save_model")
 parser.add_argument("--result_root", type=str, default="result")
+parser.add_argument("--img_save_dir", type=str, default="output")
 
 # Model Configuration
 parser.add_argument("--model_type", type=str, required=True, choices=("EDSR", "RCAN", "ABPN", "SAN"))

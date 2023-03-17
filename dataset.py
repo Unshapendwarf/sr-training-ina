@@ -43,7 +43,8 @@ class TrainDataset(data.Dataset):
         self.hr_images = []
         
         print("Preparing HR/LR dataset for training ... ")
-        for lr, hr in tqdm(zip(self.lr_filenames, self.hr_filenames), total=len(self.lr_filenames)):
+        # for lr, hr in tqdm(zip(self.lr_filenames, self.hr_filenames), total=len(self.lr_filenames)):
+        for lr, hr in zip(self.lr_filenames, self.hr_filenames):
             lr_img = Image.open(lr)
             hr_img = Image.open(hr)
             lr_img.load()

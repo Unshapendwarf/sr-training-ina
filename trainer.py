@@ -7,6 +7,7 @@ from torch.utils.data import DataLoader
 import imageio
 import time
 import tqdm
+from PIL import Image
 # from sklearn.cluster import KMeans
 
 import utility as util
@@ -25,6 +26,7 @@ class Trainer():
         self.epoch = 0
         self.model = self.model.to(self.device)
         self.MLP = MLP
+        self.img_save_dir = self.opt.img_save_dir
         
         if self.opt.pretrained:
           # print("Model loading...")
@@ -73,7 +75,7 @@ class Trainer():
         
         self.epoch += 1
         self.epoch_elapsed = self.timer.toc_total_add()
-        print('Epoch[{}-train](complete): {}sec'.format(self.epoch, self.epoch_elapsed))
+        # print('Epoch[{}-train](complete): {}sec'.format(self.epoch, self.epoch_elapsed))
         
 
     def validate_frame(self):
@@ -179,6 +181,9 @@ class Trainer():
                 output = torch.squeeze(torch.clamp(output, min=0, max=1.), 0).permute(1, 2, 0)
                 output *= 255
               output_np = output.to('cpu').detach().numpy()
+              im = Image.fromarray(output_np)
+              im.save(os.path.join(self.img_save_dir, '{:04d}.png'.format(iteration)))
+              
               
               target = torch.squeeze(torch.clamp(target, min=0, max=1.), 0).permute(1, 2, 0)
               target *= 255

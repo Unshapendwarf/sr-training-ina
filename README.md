@@ -13,21 +13,22 @@ conda create -n cluster_sr python=3.8
 conda activate cluster_sr
 ```
 
+Clone the repository
+```sh
+git clone -b validation https://github.com/Unshapendwarf/sr-training-ina.git
+cd sr-training-ina
+```
+
 Install required python dependences
 ```sh
 pip3 install -r requirements.txt
 ```
 
-Clone the repository
-```sh
-git clone https://github.com/Unshapendwarf/sr-training-ina.git
-cd sr-training-ina
-```
 
 ## Dataset
 You can download dataset [here](https://drive.google.com/file/d/1ussHhGVh0BEe_RjyGgD3lS3rJNwtOc4R/view?usp=sharing) or follow below scripts
 ```sh
-python3 download_data.py
+python3 ./scripts/download_data.py
 ```
 
 ## Execution
