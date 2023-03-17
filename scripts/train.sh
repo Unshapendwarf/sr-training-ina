@@ -7,7 +7,7 @@ n_cls=20
 SCRIPTDIR=$(dirname $0)
 BASEDIR=$(realpath "${SCRIPTDIR}/../")
 
-CUDA_VISIBLE_DEVICES=2 python train.py --data_root ${BASEDIR}/data/ \
+python train.py --data_root ${BASEDIR}/data/ \
       --model_type EDSR \
       --log_dir ${BASEDIR}/logs \
       --scale 4 --n_blocks $n_b --n_feats $n_f \
