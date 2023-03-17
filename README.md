@@ -54,7 +54,7 @@ bash scripts/test_naive.sh
 
 ## Evaluation
 Dataset: Custom youtube frames x4 scale 
-Epoch: 300
+Epoch: 100
 Number of iteration per epoch : 300
 |Method|PSNR(dB)|
 |------|---|
