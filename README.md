@@ -39,25 +39,16 @@ python3 scripts/download_data.py
 ```
 
 ## Execution
-Train Cluster
+Train SR
 ```sh
-bash scripts/train_cluster.sh
+bash scripts/train.sh
 ```
 
-Train Naive
+Test SR
 ```sh
-bash scripts/train_naive.sh
+bash scripts/test.sh
 ```
 
-Test Cluster
-```sh
-bash scripts/test_cluster.sh
-```
-
-Test Naive
-```sh
-bash scripts/test_naive.sh
-```
 
 
 ## Evaluation
