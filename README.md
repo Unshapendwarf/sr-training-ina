@@ -27,7 +27,7 @@ cd sr-training-ina
 ## Dataset
 You can download dataset [here](https://drive.google.com/file/d/1ussHhGVh0BEe_RjyGgD3lS3rJNwtOc4R/view?usp=sharing) or follow below scripts
 ```sh
-python3 download_data.py
+python3 scripts/download_data.py
 ```
 
 ## Execution
