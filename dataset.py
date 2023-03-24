@@ -83,6 +83,12 @@ class TrainDataset(data.Dataset):
 
         return input, target
 
+    def getItemValidate_idx(self, idx):
+        input = self.lr_images[idx]
+        target = self.hr_images[idx]
+
+        return input, target
+
     def getDatasetLen(self):
         return self.f_len
 

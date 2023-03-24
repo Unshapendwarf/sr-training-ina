@@ -2,6 +2,7 @@ import copy
 import torch
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 import torch.nn as nn
 
 
@@ -36,15 +37,16 @@ def train_single(opt):
     total_sr_ssim = []
     total_latency = []
     
-    if epoch % opt.val_interval == (opt.val_interval - 1):
-      for idx in range(opt.num_valid_image):
-          if opt.is_split:
-            sr_psnr, latency = trainer.validate_frame_split()
-          else:
-              sr_psnr, latency = trainer.validate_frame()         
-          total_sr_psnr.append(sr_psnr)
-          # total_sr_ssim.append(sr_ssim)
-          total_latency.append(latency)
+    if epoch % opt.val_interval == (opt.val_interval - 1) or epoch == 0:
+      # for idx in range(opt.num_valid_image):
+      #     if opt.is_split:
+      #       sr_psnr, latency = trainer.validate_frame_split()
+      #     else:
+      #       sr_psnr, latency = trainer.validate_frame_all()         
+      #     total_sr_psnr.append(sr_psnr)
+      #     # total_sr_ssim.append(sr_ssim)
+      #     total_latency.append(latency)
+      total_sr_psnr, latency = trainer.validate_frame_all()
       total_psnr = np.mean(total_sr_psnr)
       # total_ssim = np.mean(total_sr_ssim)
       print("[Epoch {}] PSNR: {}".format(epoch, total_psnr))
@@ -87,11 +89,18 @@ if __name__ == '__main__':
   np_naive_psnr = np.array(naive_psnr_log)
 
 
-  df_train_psnr = pd.DataFrame({'epoch': [x * opt.val_interval for x in range(len(np_cluster_psnr))] , 'clustered': np_cluster_psnr, 'naive': np_naive_psnr})
+  df_train_psnr = pd.DataFrame({'clustered': np_cluster_psnr, 'naive': np_naive_psnr}, index=[x * opt.val_interval for x in range(len(np_cluster_psnr))])
   if not os.path.exists(opt.result_root):
     os.makedirs(opt.result_root)
 
   df_train_psnr.to_excel(os.path.join(opt.result_root, 'training_psnr.xlsx'))
+
+
+  plt = df_train_psnr.plot(title='Training PSNR', lw=2, marker='.')
+  plt.set_xlabel('PSNR')
+  plt.set_ylabel('Epoch')
+  fig = plt.get_figure()
+  fig.savefig(os.path.join(opt.result_root, "training_psnr.png"))
 
   print("\n\n" + "="*50)
   print("Training Finished")

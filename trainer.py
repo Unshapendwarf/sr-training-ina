@@ -84,6 +84,44 @@ class Trainer():
         # print('Epoch[{}-train](complete): {}sec'.format(self.epoch, self.epoch_elapsed))
         
 
+    def validate_frame_all(self):
+        psnr_list = []
+        with torch.no_grad():
+          self.model.eval()
+          for idx in range(len(self.dataset.lr_images)):
+            input, target = self.dataset.getItemValidate_idx(idx) #returns PIL Image
+            input_tensor = self.dataset.input_transform(input).unsqueeze(0)
+            input_tensor = input_tensor.to(self.device)
+            
+            target_tensor = self.dataset.input_transform(target).unsqueeze(0)
+            target_tensor = torch.squeeze(torch.clamp(target_tensor, min=0, max=1.), 0).permute(1, 2, 0)
+            target_tensor *= 255
+            target = target_tensor.to(self.device)
+
+
+            if self.opt.rgb_255:
+              input_tensor = input_tensor*255.0
+
+            t1 = time.time()
+            output = self.model(input_tensor)
+            torch.cuda.synchronize()
+            t2 = time.time()
+
+            if self.opt.rgb_255:
+              output = torch.squeeze(torch.clamp(output, min=0, max=255.0), 0).permute(1, 2, 0)
+
+            else:
+              output = torch.squeeze(torch.clamp(output, min=0, max=1.), 0).permute(1, 2, 0)
+              output *= 255
+            # output_np = output.to('cpu').numpy()
+
+            sr_psnr = util.gpu_psnr(output, target, max_value=255.0)
+            psnr_list.append(sr_psnr)
+          # sr_ssim = util.calculate_ssim(output_np, target_np)   
+
+
+        return psnr_list, (t2-t1)*1000
+
     def validate_frame(self):
 
         with torch.no_grad():
