@@ -38,7 +38,8 @@ def test_single(opt, cluster_idx=0):
 if __name__ == '__main__':
   if opt.cluster:
     total_psnr = 0
-    total_cnt = 0
+    total_cnt = 0  
+    
     for cluster_idx in range(opt.cluster_num):
       cluster_opt = copy.deepcopy(opt)
       cluster_opt.input_path = os.path.join(opt.data_root, f'clustered/{cluster_idx}/LR')
@@ -57,4 +58,12 @@ if __name__ == '__main__':
   opt.img_save_dir = opt.img_save_dir + "/naive"
   psnr, cnt = test_single(opt)
   print("[Result] PSNR(Naive):\t{}".format(psnr))
+  
+  bicubic_opt = copy.deepcopy(opt)
+  bicubic_opt.input_path = os.path.join(opt.data_root, 'bicubic')
+  bicubic_opt.target_path = os.path.join(opt.data_root, 'HR')
+  bicubic_opt.scale = 1
+  bicubic_dataset = TestDataset(bicubic_opt)
+  bicubic_psnr = validate_raw(bicubic_dataset)
+  print("[Result] PSNR(Bicubic):\t{}".format(bicubic_psnr))
 
