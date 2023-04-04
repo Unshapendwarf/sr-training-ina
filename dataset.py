@@ -143,3 +143,15 @@ class TestDataset(data.Dataset):
         input = self.input_transform(input)
         target = self.input_transform(target)
         return input, target
+
+def validate_raw(dataset):
+    psnr_list = []
+    for idx in range(len(dataset.lr_images)):
+        # raw, target = dataset.getItemValidate(idx)
+        raw, target = dataset[idx]
+        raw_tensor = (raw * 255).to('cuda')
+        target_tensor = (target * 255).to('cuda')
+        
+        bicubic_psnr = util.gpu_psnr(raw_tensor, target_tensor, max_value=255.0)
+        psnr_list.append(bicubic_psnr)
+    return sum(psnr_list)/len(psnr_list)

@@ -62,6 +62,14 @@ if __name__ == '__main__':
     
   cluster_psnr_log = []
   
+  # check naive method
+  bicubic_opt = copy.deepcopy(opt)
+  bicubic_opt.input_path = os.path.join(opt.data_root, 'bicubic')
+  bicubic_opt.target_path = os.path.join(opt.data_root, 'HR')
+  bicubic_opt.scale = 1
+  bicubic_dataset = TestDataset(bicubic_opt)
+  bicubic_psnr = validate_raw(bicubic_dataset)
+  
   # train clustered model
   if opt.cluster:
     for cluster_idx in range(opt.cluster_num):
@@ -87,9 +95,9 @@ if __name__ == '__main__':
   np_cluster_psnr = np.mean(np_cluster_psnr, axis=0)
 
   np_naive_psnr = np.array(naive_psnr_log)
+  np_bicubic_psnr = np.array([bicubic_psnr] * len(np_cluster_psnr))
 
-
-  df_train_psnr = pd.DataFrame({'clustered': np_cluster_psnr, 'naive': np_naive_psnr}, index=[x * opt.val_interval for x in range(len(np_cluster_psnr))])
+  df_train_psnr = pd.DataFrame({'clustered': np_cluster_psnr, 'naive': np_naive_psnr, 'bicubic':np_bicubic_psnr}, index=[x * opt.val_interval for x in range(len(np_cluster_psnr))])
   if not os.path.exists(opt.result_root):
     os.makedirs(opt.result_root)
 
@@ -104,10 +112,11 @@ if __name__ == '__main__':
 
   print("\n\n" + "="*50)
   print("Training Finished")
-  print("Naive psnr: {:.03f} \nClusterd psnr: {:.03f}".format(np_naive_psnr[-1], np_cluster_psnr[-1]))
+  print("Bicubic psnr:{:.03f} \nNaive psnr: {:.03f} \nClusterd psnr: {:.03f}".format(np_bicubic_psnr[-1], np_naive_psnr[-1], np_cluster_psnr[-1]))
   
   
   
+
 
 
 
