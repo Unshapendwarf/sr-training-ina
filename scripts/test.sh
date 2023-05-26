@@ -14,3 +14,8 @@ python test.py --data_root  ${BASEDIR}/data \
       --num_batch 1 \
       --pretrained --pretrained_dir logs\
       --cluster --cluster_num 20 --img_save
+
+
+# If you download and use the "result_model", 
+# change "logs" directory to "result_model"
+# ex) in line 15, "--pretrained --pretrained_dir result_model\"

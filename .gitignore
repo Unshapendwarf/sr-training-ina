@@ -1,6 +1,7 @@
 data
 output
 result
+result_model
 logs
 **/__pycache__/
 .vscode/
