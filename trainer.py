@@ -8,6 +8,7 @@ import imageio
 import time
 import tqdm
 from PIL import Image
+import cv2
 # from sklearn.cluster import KMeans
 
 import utility as util
@@ -245,7 +246,8 @@ class Trainer():
               # total_ssim.append(sr_ssim)
               if self.img_save:
                 idx = str(self.cluster_idx * 5 + iteration).zfill(4)
-                imageio.imwrite('{}/{}.png'.format(result_dir, idx), output_np.astype(np.uint8))
+                cv2.imwrite('{}/{}.png'.format(result_dir, idx), output_np.astype(np.uint8))
+                # imageio.imwrite('{}/{}.png'.format(result_dir, idx), output_np.astype(np.uint8))
 
         return np.array(total_psnr)
         # return np.array(total_psnr), np.array(total_ssim)
