@@ -33,7 +33,7 @@ pip3 install -r requirements.txt
 
 
 ## Dataset
-You can download dataset [here](https://drive.google.com/file/d/1ussHhGVh0BEe_RjyGgD3lS3rJNwtOc4R/view?usp=sharing) or follow below scripts
+You can download dataset [here](https://drive.google.com/drive/folders/1vHhX0QQj1yjNqkrhZNLjWIXJIenR_ube?usp=sharing) or follow below scripts
 ```sh
 python3 scripts/download_data.py
 ```
