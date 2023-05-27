@@ -88,13 +88,13 @@ def train_all(opt):
             cluster_opt.model_save_root = os.path.join(opt.log_dir, "cluster")
             cluster_opt.model_name = opt.model_type + f"_cluster_{cluster_idx}"
             opt_list.append(cluster_opt)
-
-    # opt.input_path = os.path.join(opt.data_root, "LR")
-    # opt.target_path = os.path.join(opt.data_root, "HR")
-    # opt.model_save_root = os.path.join(opt.log_dir, "naive")
-    # opt.model_name = opt.model_type + f"_naive"
-    # opt.num_valid_image = opt.num_valid_image * opt.cluster_num
-    # opt_list.append(opt)
+    naive_opt = copy.deepcopy(opt)
+    naive_opt.input_path = os.path.join(opt.data_root, "LR")
+    naive_opt.target_path = os.path.join(opt.data_root, "HR")
+    naive_opt.model_save_root = os.path.join(opt.log_dir, "naive")
+    naive_opt.model_name = opt.model_type + f"_naive"
+    naive_opt.num_valid_image = opt.num_valid_image * opt.cluster_num
+    opt_list.append(naive_opt)
 
     # trainer setup
     cluster_psnr_log = []
@@ -118,49 +118,52 @@ def train_all(opt):
                 if epoch % cur_opt.val_interval == (cur_opt.val_interval - 1) or epoch == 0:
                     # for idx in range(cur_opt.num_valid_image):
                     #     if cur_opt.is_split:
-                    #       sr_psnr, latency = trainer.validate_frame_split()
+                    #       sr_psnr, latency = cur_trainer.validate_frame_split()
                     #     else:
-                    #       sr_psnr, latency = trainer.validate_frame_all()
+                    #       sr_psnr, latency = cur_trainer.validate_frame_all()
                     #     total_sr_psnr.append(sr_psnr)
                     #     # total_sr_ssim.append(sr_ssim)
                     #     total_latency.append(latency)
-                    total_sr_psnr, latency = trainer.validate_frame_all()
+                    total_sr_psnr, latency = cur_trainer.validate_frame_all()
                     total_psnr = np.mean(total_sr_psnr)
                     # total_ssim = np.mean(total_sr_ssim)
                     # print("[Epoch {}] PSNR: {}".format(epoch, total_psnr))
                     # print("[Epoch {}] PSNR: {} SSIM: {}".format(epoch, total_psnr, total_ssim))
-                    trainer.save_model(cur_opt.model_name + "_epoch_" + str(epoch))
+                    cur_trainer.save_model(cur_opt.model_name + "_epoch_" + str(epoch))
                     if epoch == (cur_opt.num_epoch - 1):
-                        trainer.save_model(cur_opt.model_name + "_last")
+                        cur_trainer.save_model(cur_opt.model_name + "_last")
                     cluster_psnr_log[i].append(total_psnr)
 
-            # plot figure per epoch
-            np_cluster_psnr = np.array(cluster_psnr_log[:-1])
-            np_cluster_psnr = np.mean(np_cluster_psnr, axis=0)
+            # plot figure 
+            if epoch % cur_opt.val_interval == (cur_opt.val_interval -1 ) or epoch == 0:    
+                np_cluster_psnr = np.array(cluster_psnr_log[:-1])
+                np_cluster_psnr_mean = np.mean(np_cluster_psnr, axis=0)
+                # print(np_cluster_psnr_mean)
+                
+                np_naive_psnr = np.array(cluster_psnr_log[-1])
+                np_bicubic_psnr = np.array([bicubic_psnr] * len(np_cluster_psnr_mean))
+                # print(np_naive_psnr)
 
-            np_naive_psnr = np.array(cluster_psnr_log[-1])
-            np_bicubic_psnr = np.array([bicubic_psnr] * len(np_cluster_psnr))
+                df_train_psnr = pd.DataFrame(
+                    {"clustered": np_cluster_psnr_mean, "naive": np_naive_psnr, "bicubic": np_bicubic_psnr},
+                    index=[x * cur_opt.val_interval for x in range(len(np_cluster_psnr_mean))],
+                )
+                if not os.path.exists(cur_opt.result_root):
+                    os.makedirs(cur_opt.result_root)
 
-            df_train_psnr = pd.DataFrame(
-                {"clustered": np_cluster_psnr, "naive": np_naive_psnr, "bicubic": np_bicubic_psnr},
-                index=[x * cur_opt.val_interval for x in range(len(np_cluster_psnr))],
-            )
-            if not os.path.exists(cur_opt.result_root):
-                os.makedirs(cur_opt.result_root)
+                df_train_psnr.to_excel(os.path.join(cur_opt.result_root, f"training_psnr_{epoch}.xlsx"))
 
-            df_train_psnr.to_excel(os.path.join(cur_opt.result_root, f"training_psnr_{epoch}.xlsx"))
+                plt = df_train_psnr.plot(title="Training PSNR", lw=2, marker=".")
+                plt.set_ylabel("PSNR")
+                plt.set_xlabel("Epoch")
+                fig = plt.get_figure()
+                fig.savefig(os.path.join(cur_opt.result_root, f"training_psnr_{epoch}.png"))
 
-            plt = df_train_psnr.plot(title="Training PSNR", lw=2, marker=".")
-            plt.set_xlabel("PSNR")
-            plt.set_ylabel("Epoch")
-            fig = plt.get_figure()
-            fig.savefig(os.path.join(cur_opt.result_root, f"training_psnr_{epoch}.png"))
-
-            tepoch.set_postfix(naiv_psnr=np_naive_psnr[-1], cls_pnsr=np_cluster_psnr[-1])
+                tepoch.set_postfix(naiv_psnr=np_naive_psnr[-1], cls_pnsr=np_cluster_psnr_mean[-1])
 
     print("\n\n" + "=" * 50)
     print("Training Finished")
-    print("Bicubic psnr:{:.03f} \nNaive psnr: {:.03f} \nClusterd psnr: {:.03f}".format(np_bicubic_psnr[-1], np_naive_psnr[-1], np_cluster_psnr[-1]))
+    print("Bicubic psnr:{:.03f} \nNaive psnr: {:.03f} \nClusterd psnr: {:.03f}".format(np_bicubic_psnr[-1], np_naive_psnr[-1], np_cluster_psnr_mean[-1]))
 
 
 if __name__ == "__main__":
