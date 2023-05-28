@@ -1,6 +1,6 @@
 import os, zipfile, gdown
 
-url = "https://drive.google.com/file/d/1OKa_bTO0d9AdoEOROXlyz12KOXBTRZJp/view?usp=share_link"
+url = "https://drive.google.com/file/d/1FbhQgGcK6quIl5lgx9v0E9Eh3Yu64APP/view?usp=drive_link"
 
 # make sure that you are in the root of working directory
 out_path = os.path.join("./result_model.zip")

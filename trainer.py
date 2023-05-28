@@ -9,6 +9,7 @@ import time
 import tqdm
 from PIL import Image
 
+import cv2
 # from sklearn.cluster import KMeans
 
 import utility as util
@@ -212,38 +213,40 @@ class Trainer:
         # total_ssim = []
 
         with torch.no_grad():
-            for iteration, batch in enumerate(data_loader):
-                input, target = batch[0], batch[1]
-                input, target = input.to(self.device), target.to(self.device)
-                if self.opt.rgb_255:
-                    input = input * 255.0
-                output = self.model(input)
-                if self.opt.rgb_255:
-                    output = torch.squeeze(torch.clamp(output, min=0, max=255.0), 0).permute(1, 2, 0)
-                else:
-                    output = torch.squeeze(torch.clamp(output, min=0, max=1.0), 0).permute(1, 2, 0)
-                    output *= 255
-
-                output_np = output.to("cpu").detach().numpy()
-
-                # if self.img_save:
-                #   output_np = output_np.astype(np.uint8)
-                #   im = Image.fromarray(output_np)
-                #   im.save(os.path.join(self.img_save_dir, '{:04d}.png'.format(self.cluster_idx*5 + iteration)))
-
-                target = torch.squeeze(torch.clamp(target, min=0, max=1.0), 0).permute(1, 2, 0)
-                target *= 255
-                # target_np = target.to('cpu').detach().numpy()
-
-                sr_psnr = util.gpu_psnr(output, target, max_value=255.0)
-                # sr_psnr = util.get_psnr(output_np, target_np, max_value=255.0)
-                # print(sr_psnr)
-                # sr_ssim = util.calculate_ssim(output_np, target_np)
-                total_psnr.append(sr_psnr)
-                # total_ssim.append(sr_ssim)
-                if self.img_save:
-                    idx = str(self.cluster_idx * 5 + iteration).zfill(4)
-                    imageio.imwrite("{}/{}.png".format(result_dir, idx), output_np.astype(np.uint8))
+          for iteration, batch in enumerate(data_loader):
+              input, target = batch[0], batch[1]
+              input, target =  input.to(self.device), target.to(self.device)
+              if self.opt.rgb_255:
+                input = input*255.0
+              output = self.model(input)
+              if self.opt.rgb_255:
+               output = torch.squeeze(torch.clamp(output, min=0, max=255.), 0).permute(1, 2, 0)               
+              else:             
+                output = torch.squeeze(torch.clamp(output, min=0, max=1.), 0).permute(1, 2, 0)
+                output *= 255
+              
+              output_np = output.to('cpu').detach().numpy()
+              
+              # if self.img_save:
+              #   output_np = output_np.astype(np.uint8)
+              #   im = Image.fromarray(output_np)
+              #   im.save(os.path.join(self.img_save_dir, '{:04d}.png'.format(self.cluster_idx*5 + iteration)))
+              
+              
+              target = torch.squeeze(torch.clamp(target, min=0, max=1.), 0).permute(1, 2, 0)
+              target *= 255
+              # target_np = target.to('cpu').detach().numpy()  
+              
+              sr_psnr = util.gpu_psnr(output, target, max_value=255.0)
+              # sr_psnr = util.get_psnr(output_np, target_np, max_value=255.0)
+              # print(sr_psnr)
+              # sr_ssim = util.calculate_ssim(output_np, target_np)   
+              total_psnr.append(sr_psnr)
+              # total_ssim.append(sr_ssim)
+              if self.img_save:
+                idx = str(self.cluster_idx * 5 + iteration).zfill(4)
+                cv2.imwrite('{}/{}.png'.format(result_dir, idx), output_np.astype(np.uint8))
+                # imageio.imwrite('{}/{}.png'.format(result_dir, idx), output_np.astype(np.uint8))
 
         return np.array(total_psnr)
         # return np.array(total_psnr), np.array(total_ssim)
