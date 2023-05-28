@@ -30,7 +30,7 @@ parser.add_argument("--lr", type=float, default=1e-5)
 parser.add_argument("--lr_decay_epoch", type=int, default=100)
 parser.add_argument("--lr_decay_rate", type=float, default=1)
 parser.add_argument("--num_valid_image", type=int, default=10, help="number of images used for validation")
-parser.add_argument("--val_interval", type=int, default=10, help='validation interval')
+parser.add_argument("--val_interval", type=int, default=1, help='validation interval')
 
 # Dataset
 parser.add_argument("--img_format", type=str, default="png", choices=("png", "AVIF"))
