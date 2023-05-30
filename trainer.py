@@ -245,6 +245,7 @@ class Trainer:
               # total_ssim.append(sr_ssim)
               if self.img_save:
                 idx = str(self.cluster_idx * 5 + iteration).zfill(4)
+                output_np = output_np[:,:,::-1]
                 cv2.imwrite('{}/{}.png'.format(result_dir, idx), output_np.astype(np.uint8))
                 # imageio.imwrite('{}/{}.png'.format(result_dir, idx), output_np.astype(np.uint8))
 
