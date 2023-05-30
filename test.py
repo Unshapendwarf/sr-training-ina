@@ -21,7 +21,7 @@ def copy_bicubic(src, dst):
     for p in path_dir:
       cmd = 'cp {} {}/{:04d}.png'.format(p, dst, cnt)
       cnt += 1
-      print(cmd)
+      os.system(cmd)
 
 
 def test_single(opt, cluster_idx=0):
@@ -48,6 +48,13 @@ def test_single(opt, cluster_idx=0):
   return avg_psnr, len(psnr)
 
 if __name__ == '__main__':
+  
+  bicubic_output_dir = opt.img_save_dir + "/baseline"
+  bicubic_dir = os.path.join(opt.data_root, 'bicubic')
+  if not os.path.exists(bicubic_output_dir):
+    os.makedirs(bicubic_output_dir)
+  copy_bicubic(bicubic_dir, bicubic_output_dir)
+  
   if opt.cluster:
     total_psnr = 0
     total_cnt = 0  
@@ -62,6 +69,7 @@ if __name__ == '__main__':
       total_psnr += psnr * cnt
       total_cnt += cnt
     print("[Result] PSNR(Cluster):\t{}".format(total_psnr / total_cnt))
+  
       
   # Test naive model
   opt.input_path = os.path.join(opt.data_root, 'LR')
@@ -77,10 +85,6 @@ if __name__ == '__main__':
   bicubic_opt.scale = 1
   bicubic_dataset = TestDataset(bicubic_opt)
   bicubic_psnr = validate_raw(bicubic_dataset)
-  bicubic_dir = os.path.join(opt.data_root, 'bicubic')
-  bicubic_output_dir = opt.img_save_dir + "/baseline"
-  if not os.path.exists(bicubic_output_dir):
-    os.makedirs(bicubic_output_dir)
-  copy_bicubic(bicubic_dir, bicubic_output_dir)
+  
   print("[Result] PSNR(Bicubic):\t{}".format(bicubic_psnr))
 
