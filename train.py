@@ -65,6 +65,9 @@ def train_all(opt):
     bicubic_opt.input_path = os.path.join(opt.data_root, "bicubic")
     bicubic_opt.target_path = os.path.join(opt.data_root, "HR")
     bicubic_opt.scale = 1
+    
+    print("Preparing HR/LR dataset for training ... ")
+    
     bicubic_dataset = TestDataset(bicubic_opt)
     bicubic_psnr = validate_raw(bicubic_dataset)
 
