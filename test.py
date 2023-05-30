@@ -1,6 +1,7 @@
 import copy
 import torch.nn as nn
 import torch
+import glob
 
 from dataset import *
 from option import opt
@@ -11,6 +12,17 @@ import model.ABPN as ABPN
 from model.EDSR import SingleNetwork
 import model.SAN.san as san
 import model.RCAN.rcan as rcan
+
+
+def copy_bicubic(src, dst):
+    path_dir = glob.glob(src+'/*.png')
+    path_dir.sort()
+    cnt = 0
+    for p in path_dir:
+      cmd = 'cp {} {}/{:04d}.png'.format(p, dst, cnt)
+      cnt += 1
+      print(cmd)
+
 
 def test_single(opt, cluster_idx=0):
   if opt.model_type == "EDSR":
@@ -65,5 +77,10 @@ if __name__ == '__main__':
   bicubic_opt.scale = 1
   bicubic_dataset = TestDataset(bicubic_opt)
   bicubic_psnr = validate_raw(bicubic_dataset)
+  bicubic_dir = os.path.join(opt.data_root, 'bicubic')
+  bicubic_output_dir = opt.img_save_dir + "/baseline"
+  if not os.path.exists(bicubic_output_dir):
+    os.makedirs(bicubic_output_dir)
+  copy_bicubic(bicubic_dir, bicubic_output_dir)
   print("[Result] PSNR(Bicubic):\t{}".format(bicubic_psnr))
 
